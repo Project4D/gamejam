@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class IsometricMovement3D : MonoBehaviour
+public class Movement : MonoBehaviour
 {
+    public float step = 1f;
     public float speed = 5f;
     private CharacterController characterController;
-    private Vector3 movement;
+    private Vector3 movementVector;
 
     void Start()
     {
@@ -13,30 +15,50 @@ public class IsometricMovement3D : MonoBehaviour
 
     void Update()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        RotateMouse();
 
-        Vector3 forward = Camera.main.transform.forward;
-        Vector3 right = Camera.main.transform.right;
+        movementVector = Vector3.zero;
 
-        forward.y = 0;
-        right.y = 0;
-
-        forward.Normalize();
-        right.Normalize();
-
-        movement = forward * vertical + right * horizontal;
-        movement = movement.normalized * speed;
-
-        if (movement != Vector3.zero)
+        if (Input.GetKey(KeyCode.W))
         {
-            Quaternion toRotation = Quaternion.LookRotation(movement, Vector3.up);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 720 * Time.deltaTime);
+            movementVector += Vector3.right;
+            movementVector += Vector3.forward;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            movementVector += Vector3.left;
+            movementVector += Vector3.forward;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            movementVector += Vector3.back;
+            movementVector += Vector3.left;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            movementVector += Vector3.right;
+            movementVector += Vector3.back;
+        }
+
+        movementVector = movementVector.normalized * speed;
+    }
+
+    void RotateMouse()
+    {
+        Plane plane = new Plane(Vector3.up, transform.position);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (plane.Raycast(ray, out float distance))
+        {
+            Vector3 target = ray.GetPoint(distance);
+            Vector3 direction = (target - transform.position).normalized;
+            Quaternion rotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 100 * Time.deltaTime);
         }
     }
 
     void FixedUpdate()
     {
-        characterController.Move(movement * Time.deltaTime);
+        characterController.Move(movementVector * Time.deltaTime);
     }
 }

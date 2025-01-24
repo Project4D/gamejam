@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,11 +7,13 @@ public class Movement : MonoBehaviour
     public float step = 1f;
     public float speed = 5f;
     private CharacterController characterController;
+    private Rigidbody rigidbody;
     private Vector3 movementVector;
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -51,14 +54,14 @@ public class Movement : MonoBehaviour
         if (plane.Raycast(ray, out float distance))
         {
             Vector3 target = ray.GetPoint(distance);
-            Vector3 direction = (target - transform.position).normalized;
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 100 * Time.deltaTime);
+            transform.LookAt(target);
         }
     }
 
     void FixedUpdate()
     {
-        characterController.Move(movementVector * Time.deltaTime);
+        var frameMovement = movementVector * Time.fixedDeltaTime;
+        transform.position += frameMovement;
+        movementVector -= frameMovement;
     }
 }

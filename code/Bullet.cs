@@ -22,7 +22,8 @@ public class Bullet: MonoBehaviour
     {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         GameObject bullet1 = Instantiate(bulletPrefab, firePoint1.position, firePoint1.rotation);
-
+        bullet.transform.Rotate(0, 0, 310);
+        bullet1.transform.Rotate(0, 0, 310);
         bullet.AddComponent<ManualBullet>().Initialize(bulletSpeed, 5);
         bullet1.AddComponent<ManualBullet>().Initialize(bulletSpeed, 5);
     }

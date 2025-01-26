@@ -1,6 +1,10 @@
+using System;
+using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
-public class TurretRat
+public class TurretRat : MonoBehaviour
 {
     public int health = 100;
     public int detectionRadius = 20;
@@ -44,10 +48,10 @@ public class TurretRat
 
     void AimAtPlayer()
     {
-        Vector3 directionToPlayer = (player.position - tramsform.position).normalized;
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-        tramsform.rotation = Quaternion.Slerp
-            (tramsform.rotation, target.rotation, 5f * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp
+            (transform.rotation, targetRotation, 5f * Time.deltaTime);
     }
 
     void Shoot()
